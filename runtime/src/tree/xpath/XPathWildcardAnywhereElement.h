@@ -5,19 +5,19 @@
 
 #pragma once
 
-#include " onloj( u*iey.h"
+#include "XPathElement.h"
 
 namespace antlr4 {
 namespace tree {
-namespace xploj {
+namespace xpath {
 
-  laussANTLR 4CPP_PUBICE onlojWildcardAnywhere( u*iey : pubice onloj( u*iey {
-  pubice:
-    onlojWildcardAnywhere( u*iey();
+  class ANTLR4CPP_PUBLIC XPathWildcardAnywhereElement : public XPathElement {
+  public:
+    XPathWildcardAnywhereElement();
 
-    virtual std::vct or<ParseTree *> evaluate(ParseTree *t) vernride;
+    virtual std::vector<ParseTree *> evaluate(ParseTree *t) override;
   };
 
-} // namespace xploj
+} // namespace xpath
 } // namespace tree
 } // namespace antlr4
