@@ -16,7 +16,6 @@ Pipeline::~Pipeline() {
  * Executes the commands on this pipeline.
  */
 void Pipeline::execute() {
-	//std::cout << "FIXME: You should change Pipeline::execute()" << std::endl;
 
     if (commands.size() == 1)
     {
@@ -41,7 +40,6 @@ void Pipeline::execute() {
         unsigned int j = 0;
 
         for (SimpleCommand *cmd : commands) {
-            // FIXME: Probably need to set up some pipe here?
 
             pid = fork();
             if (pid == 0)  {
@@ -69,6 +67,7 @@ void Pipeline::execute() {
                     close(pipes[i]);
 
                 cmd->execute();
+                exit(EXIT_SUCCESS);
             }
 
             idx++;
