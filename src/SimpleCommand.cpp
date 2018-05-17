@@ -15,37 +15,9 @@ void SimpleCommand::execute() {
         else {
             chdir((char *) arguments[0].c_str());
         }
-
-        //exit(EXIT_SUCCESS);
     }
-    else //if (fork() == 0)
+    else
     {
-        // Redirects
-        int fd = -1;
-        int flags = O_CREAT;
-        for (const IORedirect &redirect : redirects)
-        {
-            if (redirect.getType() == IORedirect::Type::INPUT)
-                flags = flags | O_RDONLY;
-            else if (redirect.getType() == IORedirect::Type::OUTPUT)
-                flags = flags | O_WRONLY;
-            else if (redirect.getType() == IORedirect::Type::APPEND)
-                flags = flags | O_WRONLY | O_APPEND;
-
-            if ((fd = open(redirect.getNewFile().c_str(), flags)))
-            {
-                if (redirect.getType() == IORedirect::Type::INPUT)
-                    close(STDIN_FILENO);
-                else if (redirect.getType() == IORedirect::Type::OUTPUT)
-                    close(STDOUT_FILENO);
-                else if (redirect.getType() == IORedirect::Type::APPEND)
-                    close(STDOUT_FILENO);
-
-                dup(fd);
-                close(fd);
-            }
-        }
-
         // create vector containing char to pass to exec call
         std::vector<char *> argsChr = {};
         argsChr.push_back(const_cast<char *>(command.c_str()));
@@ -61,6 +33,32 @@ void SimpleCommand::execute() {
         if ((pid = fork()) < 0) {
             std::cerr << "Forking child failed" << std::endl;
         } else if (pid == 0) {
+			// Redirects
+			int fd = -1;
+			int flags = O_CREAT;
+			for (const IORedirect &redirect : redirects)
+			{
+				if (redirect.getType() == IORedirect::Type::INPUT)
+					flags = flags | O_RDONLY;
+				else if (redirect.getType() == IORedirect::Type::OUTPUT)
+					flags = flags | O_WRONLY;
+				else if (redirect.getType() == IORedirect::Type::APPEND)
+					flags = flags | O_WRONLY | O_APPEND;
+
+				if ((fd = open(redirect.getNewFile().c_str(), flags)))
+				{
+					if (redirect.getType() == IORedirect::Type::INPUT)
+						close(STDIN_FILENO);
+					else if (redirect.getType() == IORedirect::Type::OUTPUT)
+						close(STDOUT_FILENO);
+					else if (redirect.getType() == IORedirect::Type::APPEND)
+						close(STDOUT_FILENO);
+
+					dup(fd);
+					close(fd);
+				}
+			}
+			
             if (execvp(command.c_str(), argsChr.data()) < 0) {
                 std::cout << "Executing failed" << std::endl;
             }
