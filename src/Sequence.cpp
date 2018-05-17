@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unistd.h>
 #include "Sequence.h"
 #include "Pipeline.h"
 
@@ -17,8 +18,16 @@ Sequence::~Sequence() {
 void Sequence::execute() {
 	std::cout << "FIXME: You should change Sequence::execute()" << std::endl;
 
+    pid_t pid;
 	for( Pipeline *p : pipelines ) {
 		// FIXME: More code needed?
-		p->execute();
+
+
+        if (p->isAsync()) {
+            pid = fork();
+            if (pid == 0) { p->execute(); }
+        }
+
+		else p->execute();
 	}
 }
