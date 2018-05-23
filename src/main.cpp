@@ -6,6 +6,7 @@
 #include "../gen/ShellGrammarParser.h"
 #include "CommandVisitor.h"
 #include "Sequence.h"
+#include "unistd.h"
 
 class ErrorListener : public antlr4::BaseErrorListener {
 	bool seenError;
@@ -27,10 +28,11 @@ public:
 };
 
 int main() {
-	static const char *PROMPT = "-> ";
+    char buffer[MAXPATHLEN];
+
 	while( true ) {
 		// Print a prompt
-		std::cout << PROMPT;
+		std::cout << getenv("USER") << ":" << getcwd(buffer, MAXPATHLEN) << "$";
 		std::flush(std::cout);
 
 		// Read a complete line
