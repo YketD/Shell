@@ -16,18 +16,15 @@ Sequence::~Sequence() {
  * was used - waits for execution to be finished or not.
  */
 void Sequence::execute() {
-	std::cout << "FIXME: You should change Sequence::execute()" << std::endl;
 
     pid_t pid;
-	for( Pipeline *p : pipelines ) {
-		// FIXME: More code needed?
-
+    for( Pipeline *p : pipelines ) {
 
         if (p->isAsync()) {
             pid = fork();
-            if (pid == 0) { p->execute(); }
+            if (pid == 0) p->execute();
         }
 
-		else p->execute();
-	}
+        else p->execute();
+    }
 }
