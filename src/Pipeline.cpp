@@ -77,6 +77,8 @@ void Pipeline::execute() {
         for(unsigned int i = 0; i < 2*pipeCount; i++)
             close(pipes[i]);
 
-        while (wait(NULL) > 0);
+        // Wait for execution to finish
+        while (wait(nullptr) > 0)
+        {}
     }
 }
