@@ -21,13 +21,17 @@ void SimpleCommand::execute() {
         }
         else
         {
+            // check if goal = ~ + "/anything"
+            //if so, change current dir to home dir /anything
             if (arguments[0][0] == '~')
             {
+
                 arguments[0].erase(0, 1);
                 arguments[0] = getenv("HOME") + arguments[0];
             }
 
             // Directory handling
+            // Checking first if dir exists, second if you have permissions to read
             struct stat st;
             if ((stat(arguments[0].c_str(), &st) != 0) || (((st.st_mode) & S_IFMT) != S_IFDIR))
                 std::cerr << "Not a valid directory" << std::endl;
@@ -40,7 +44,16 @@ void SimpleCommand::execute() {
     else
     {
 
-        // create vector containing char to pass to exec call
+        //to execute execvp, 2 arguments are needed
+        //1. <char *>array
+        //  a "string" containing the command
+        //2. <char *>vector
+        //  which contains
+        //      1. the command
+        //      2. the argument list
+        //      3. a nullptr
+
+        // create & fill 2. of description above
         std::vector<char *> argsChr = {};
         argsChr.push_back(const_cast<char *>(command.c_str()));
         for (auto const &arg : arguments)
@@ -49,17 +62,32 @@ void SimpleCommand::execute() {
         }
         argsChr.emplace_back(nullptr);
 
+    //var declaration
         pid_t pid;
         int status;
 
+        //fork, if succesfull & child process, execvp
+        //if succesfull & parent process, wait for child to finish
         if ((pid = fork()) < 0) {
             std::cerr << "Forking child failed" << std::endl;
         } else if (pid == 0) {
-            // Redirects
+             // Redirects
+
+             /*
+              * Var Dec
+              * fd = file descriptor
+              * flags = purpose for opening file (write, read)
+              */
             int fd = -1;
             int flags = O_CREAT;
+
+            //iterate through redirects
             for (const IORedirect &redirect : redirects)
             {
+                //check goal of opening the file
+                // write    ".. >  /file"
+                // read     ".. <  /file"
+                // append   ".. >> /file"
                 if (redirect.getType() == IORedirect::Type::INPUT)
                     flags = flags | O_RDONLY;
                 else if (redirect.getType() == IORedirect::Type::OUTPUT)
@@ -67,8 +95,11 @@ void SimpleCommand::execute() {
                 else if (redirect.getType() == IORedirect::Type::APPEND)
                     flags = flags | O_WRONLY | O_APPEND;
 
+                //open file & save descriptor in fd
+                //check for succesfull creation before continuing
                 if ((fd = open(redirect.getNewFile().c_str(), flags)))
                 {
+                    //close the unnecessary connections to the files
                     if (redirect.getType() == IORedirect::Type::INPUT)
                         close(STDIN_FILENO);
                     else if (redirect.getType() == IORedirect::Type::OUTPUT)
@@ -76,7 +107,9 @@ void SimpleCommand::execute() {
                     else if (redirect.getType() == IORedirect::Type::APPEND)
                         close(STDOUT_FILENO);
 
+                    //duplicate socket & assign new input/output connection to file
                     dup(fd);
+                    //close old socket
                     close(fd);
                 }
             }
