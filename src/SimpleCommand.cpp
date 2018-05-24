@@ -7,8 +7,13 @@
 
 void SimpleCommand::execute() {
 
+    // Better way to exit
+    if (command == "exit")
+    {
+        exit(0);
+    }
     // Change directory
-    if (command.compare("cd") == 0)
+    else if (command == "cd")
     {
         if (arguments.empty())
         {
@@ -76,7 +81,7 @@ void SimpleCommand::execute() {
                 }
             }
 
-            if (execvp(command.c_str(), argsChr.data()) < 0) {
+            if (execvp(command.c_str(), argsChr.data()) < 0){
                 std::cout << "Executing failed" << std::endl;
             }
 
