@@ -17,14 +17,22 @@ Sequence::~Sequence() {
  */
 void Sequence::execute() {
 
-    pid_t pid;
-    for( Pipeline *p : pipelines ) {
-
-        if (p->isAsync()) {
-            pid = fork();
-            if (pid == 0) p->execute();
+    int pid;
+    
+    // Execute each pipeline
+    for( Pipeline *p : pipelines )
+    {
+        if (p->isAsync())
+        {
+            // Execute in a child if async
+            if ((pid = fork()) == 0)
+                p->execute();
         }
 
-        else p->execute();
+        // Else just execute normally
+        else
+        {
+            p->execute();
+        }
     }
 }

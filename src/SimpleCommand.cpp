@@ -80,6 +80,12 @@ void SimpleCommand::execute() {
                 std::cout << "Executing failed" << std::endl;
             }
 
-        } else while (wait(&status) != pid);
+        }
+        else
+        {
+            // wait for child to finish execution
+            while (wait(&status) != pid)
+            {}
+        }
     }
 }
