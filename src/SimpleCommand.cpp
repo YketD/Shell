@@ -62,7 +62,7 @@ void SimpleCommand::execute() {
         }
         argsChr.emplace_back(nullptr);
 
-    //var declaration
+		//var declaration
         pid_t pid;
         int status;
 

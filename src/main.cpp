@@ -2,6 +2,7 @@
 #include <ANTLRInputStream.h>
 #include <CommonTokenStream.h>
 #include <tree/ParseTree.h>
+#include <sys/param.h>
 #include "../gen/ShellGrammarLexer.h"
 #include "../gen/ShellGrammarParser.h"
 #include "CommandVisitor.h"
